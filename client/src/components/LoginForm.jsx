@@ -1,6 +1,6 @@
-// src/components/LoginForm.jsx
 import React, { useState } from 'react';
 import { loginUser } from '../api/userAPI';
+import { useNavigate } from 'react-router-dom';
 
 const LoginForm = () => {
     const [email, setEmail] = useState('');
@@ -8,13 +8,19 @@ const LoginForm = () => {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
+    const navigate = useNavigate();
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         setSuccess('');
         try {
             const res = await loginUser(email, password);
+            localStorage.setItem('token', res.cookie);
+            const token = localStorage.getItem('token');
+            console.log('Token from localStorage:', token);
             setSuccess(`Welcome back, ${res.name || 'user'}!`);
+            navigate('/upload');
         } catch (err) {
             setError(err.response?.data?.message || 'Login failed');
         }
